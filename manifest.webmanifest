@@ -1,0 +1,20 @@
+{
+  "name": "さんすうバトル！ フテ猫 vs クロネコさん",
+  "short_name": "さんすうバトル",
+  "description": "小学1〜3年生の算数を、フテ猫たちと一緒にバトル形式で練習できるゲーム。",
+  "lang": "ja",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFBF0",
+  "theme_color": "#FFFBF0",
+  "categories": ["education", "games"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
