@@ -835,7 +835,7 @@ function duck(ms){
   }catch(e){}
 }
 
-/* ---------- クロネコさんの音声 ---------- */
+/* ---------- あいての音声 ---------- */
 let voiceOn=true, jaVoice=null, voiceChecked=false;
 function findVoice(){
   if(!('speechSynthesis' in window)) return null;
@@ -848,6 +848,9 @@ function initVoice(){
   if(jaVoice) voiceChecked = true;
   else speechSynthesis.onvoiceschanged = ()=>{ jaVoice = findVoice(); voiceChecked = true; };
 }
+function voiceStop(){
+  if('speechSynthesis' in window){ try{ speechSynthesis.cancel(); }catch(e){} }
+}
 function speakKuro(t){
   if(!voiceOn || !jaVoice || !('speechSynthesis' in window)) return;
   try{
@@ -858,6 +861,7 @@ function speakKuro(t){
     speechSynthesis.speak(u);
   }catch(e){}
 }
+function voiceSay(t){ speakKuro(t); }
 
 /* ---------- セリフ ---------- */
 const LINES = {
@@ -2557,7 +2561,7 @@ function setBgm(on){
 function setVoice(on){
   voiceOn=on;
   $('#voiceBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
-  if(!on && 'speechSynthesis' in window){ try{ speechSynthesis.cancel(); }catch(e){} }
+  if(!on) voiceStop();
 }
 $('#bgmBtn').addEventListener('click',()=>{ unlockAudio(); SFX.tap(); setBgm(!bgmOn); });
 $('#voiceBtn').addEventListener('click',()=>{ unlockAudio(); SFX.tap(); setVoice(!voiceOn); });
@@ -2645,11 +2649,11 @@ $('#hintBtn').addEventListener('click',()=>{
 });
 ['touchstart','pointerdown','click','keydown'].forEach(ev=>
   document.addEventListener(ev, unlockAudio, {once:true, passive:true}));
+if(!('speechSynthesis' in window)) $('#voiceBtn').style.display='none';
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){ if('speechSynthesis' in window){ try{ speechSynthesis.cancel(); }catch(e){} } }
+  if(document.hidden) voiceStop();
   else { const c=actx; if(c && c.state==='suspended') c.resume(); }
 });
-if(!('speechSynthesis' in window)) $('#voiceBtn').style.display='none';
 
 /* =========================================================
    Service Worker（オフラインで あそべるように）
