@@ -22,7 +22,7 @@
 set -euo pipefail
 
 USER_NAME="ganapati0330"
-REPO_NAME="${REPO_NAME:-futeneko-sansu-battle}"
+REPO_NAME="${REPO_NAME:-sansu-battle}"
 REPO_DESC="小学1〜3年生の算数バトルゲーム（フテ猫・クロネコさん・チャッピーちゃん）"
 BRANCH="main"
 
