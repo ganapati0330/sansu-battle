@@ -2,7 +2,7 @@
    ねらい：一度ひらけば、そのあとは 電波が なくても あそべるようにする。
    index.html 自体に 画像も音も 入っているので、キャッシュするのは ほぼこの1枚だけ。 */
 
-const VERSION = 'v21';
+const VERSION = 'v26';
 const CACHE = 'sansu-battle-' + VERSION;
 
 const ASSETS = [
