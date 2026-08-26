@@ -409,14 +409,29 @@ body{
 .kv-fill{flex:1;min-height:46vh}
 .kv-safe{height:2px}
 .support{position:relative;z-index:1;text-align:center;margin-top:10px}
-.support a{
+.support button{
+  font-family:inherit;cursor:pointer;
   display:inline-block;padding:7px 16px;border-radius:999px;
   background:rgba(255,255,255,.92);color:#8A5A20;
   border:2px solid rgba(233,137,32,.85);
-  font-size:12px;font-weight:800;text-decoration:none;line-height:1.2;
+  font-size:12px;font-weight:800;line-height:1.2;
   -webkit-tap-highlight-color:transparent;
 }
-.support a:active{transform:scale(.96)}
+.support button:active{transform:scale(.96)}
+.supbox h3::before{background:#E98920 !important}
+.supbox .lead{font-weight:800;font-size:13.5px;margin-bottom:10px}
+.supbox ol{margin:0 0 12px;padding-left:1.25em;font-size:12.5px;line-height:1.85;color:var(--ink)}
+.supbox ol li{margin-bottom:4px}
+.supbox .mission{
+  border-left:4px solid rgba(233,137,32,.65);
+  padding-left:10px;margin-bottom:12px;
+  font-size:12.5px;line-height:1.85;
+}
+.supbox .free{
+  border:2px solid rgba(233,137,32,.5);background:rgba(255,243,228,.75);
+  border-radius:12px;padding:10px 12px;margin:0 0 12px;
+  font-size:12px;line-height:1.8;
+}
 .support .note{
   display:block;margin-top:5px;font-size:10px;font-weight:700;
   color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)
@@ -595,7 +610,7 @@ body{
     <button class="btn primary" id="goSelect">はじめる</button>
     <button class="btn ghost" id="statsTitle" style="margin-top:8px">にがて分析を みる</button>
     <div class="support">
-      <a href="https://futeneko-games.booth.pm/" target="_blank" rel="noopener">♥ このゲームを応援する</a>
+      <button type="button" id="supBtn">♥ このゲームを応援する</button>
       <span class="note">保護者のかたへ ／ すべて無料で公開しています</span>
     </div>
     <div class="kv-safe"></div>
@@ -810,6 +825,40 @@ body{
     <button class="btn ghost" id="ioNew">あたらしい プレイヤーに する</button>
     <button class="btn ghost" id="ioReplace">いまの プレイヤーを 入れかえる</button>
     <button class="btn ghost" id="ioCancel">やめる</button>
+  </div>
+</div>
+
+<div class="modal" id="supModal">
+  <div class="mbox supbox">
+    <h3>このゲームを 応援する</h3>
+
+    <p class="lead">このゲームは無料です。これからも無料のままです。</p>
+
+    <p>個人で制作している、小学1〜3年生むけの学習ゲームです。</p>
+
+    <p class="mission">質の高い教材が、家庭の経済状況によって
+    手の届かないものであってほしくない。
+    その思いから、すべてのゲームを無料で公開しています。
+    低学年のうちの「わかった！」が、その子の学びを支えると信じています。</p>
+
+    <div class="free">
+      「応援したい」と思っていただけた方だけ、
+      BOOTH（ピクシブが運営する販売サイト）から、
+      <b>お好きな金額</b>を送ることができます。<br>
+      金額は自由で、下限はありません。
+    </div>
+
+    <p style="margin-bottom:8px"><b>手順（3ステップ）</b></p>
+    <ol>
+      <li>下のボタンでBOOTHの商品ページが開きます</li>
+      <li>「カートに追加」→「金額を上乗せして応援↑」で金額を入力</li>
+      <li>お支払い方法を選んで完了</li>
+    </ol>
+
+    <p>いただいた支援は、新しいゲームの制作に使わせていただきます。</p>
+
+    <button class="btn primary" id="supGo">BOOTHのページを ひらく</button>
+    <button class="btn ghost" id="supClose">とじる</button>
   </div>
 </div>
 
@@ -2885,6 +2934,23 @@ document.addEventListener('visibilitychange',()=>{
   if(document.hidden) voiceStopAll();
   else { const c=actx; if(c && c.state==='suspended') c.resume(); }
 });
+
+/* =========================================================
+   応援について（保護者むけの説明）
+   ========================================================= */
+(function supportDialog(){
+  const SHOP = 'https://futeneko-games.booth.pm/items/8764559';
+  const modal = $('#supModal');
+  const open  = () => modal.classList.add('on');
+  const close = () => modal.classList.remove('on');
+  $('#supBtn').addEventListener('click', open);
+  $('#supClose').addEventListener('click', close);
+  $('#supGo').addEventListener('click', ()=>{
+    window.open(SHOP, '_blank', 'noopener');
+    close();
+  });
+  modal.addEventListener('click', e => { if(e.target === modal) close(); });
+})();
 
 /* =========================================================
    Service Worker（オフラインで あそべるように）
