@@ -1,44 +1,51 @@
-/* さんすうバトル！ Service Worker
-   ねらい：一度ひらけば、そのあとは 電波が なくても あそべるようにする。
-   index.html 自体に 画像も音も 入っているので、キャッシュするのは ほぼこの1枚だけ。 */
+/* =========================================================
+   さんすうバトル！ フテ猫 vs クロネコさん
+   Service Worker
 
-const VERSION = 'v26';
-const CACHE = 'sansu-battle-' + VERSION;
+   ★ index.html を更新したら、下の VERSION の数字を
+     必ず 1つ増やしてください。
+     増やさないと、利用者の画面が古いままになります。
+   ========================================================= */
+const VERSION = 26;
+const CACHE = 'sansu-battle-v' + VERSION;
 
+/* 事前に保存しておくファイル。
+   存在しないファイルがあっても失敗しないよう、1つずつ入れる。 */
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png',
-  './maskable-192.png',
-  './maskable-512.png',
   './apple-touch-icon.png',
   './ogp.png'
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE)
-      // 1つでも失敗すると install ごと こけるので、個別に入れる
-      .then(cache => Promise.all(
-        ASSETS.map(url => cache.add(url).catch(() => null))
-      ))
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await Promise.all(ASSETS.map(async url => {
+      try {
+        await cache.add(new Request(url, { cache: 'reload' }));
+      } catch (e) {
+        /* そのファイルが無くても、他の保存は続ける */
+      }
+    }));
+  })());
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k.startsWith('sansu-battle-') && k !== CACHE)
-            .map(k => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+    );
+    await self.clients.claim();
+  })());
 });
 
-/* キャッシュ優先。うしろで こっそり新しいものを とりにいく（stale-while-revalidate） */
+/* index.html は「まずネットワーク」。
+   更新をすぐ受け取れるようにするため。つながらなければ保存版を使う。
+   それ以外は「まず保存版」。表示を速くするため。 */
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -46,26 +53,40 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.open(CACHE).then(cache =>
-      cache.match(req, { ignoreSearch: true }).then(hit => {
-        const network = fetch(req)
-          .then(res => {
-            if (res && res.status === 200 && res.type === 'basic') {
-              cache.put(req, res.clone());
-            }
-            return res;
-          })
-          .catch(() => hit || cache.match('./index.html'));
-        // キャッシュがあれば すぐ返す。なければ ネットワークを待つ。
-        return hit || network;
-      })
-    )
-  );
+  const isPage = req.mode === 'navigate' ||
+                 (req.headers.get('accept') || '').includes('text/html');
+
+  if (isPage) {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch(req);
+        const cache = await caches.open(CACHE);
+        cache.put(req, fresh.clone());
+        return fresh;
+      } catch (e) {
+        const hit = await caches.match(req) || await caches.match('./index.html');
+        if (hit) return hit;
+        throw e;
+      }
+    })());
+    return;
+  }
+
+  event.respondWith((async () => {
+    const hit = await caches.match(req);
+    if (hit) return hit;
+    try {
+      const fresh = await fetch(req);
+      const cache = await caches.open(CACHE);
+      cache.put(req, fresh.clone());
+      return fresh;
+    } catch (e) {
+      throw e;
+    }
+  })());
 });
 
-/* 画面の「こうしん」ボタンから 呼ばれたときだけ 新しいSWに 切りかわる。
-   （install で すぐ切りかえると、バトルの とちゅうで リロードされてしまう） */
+/* 「こうしん」ボタンから呼ばれる */
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') self.skipWaiting();
 });

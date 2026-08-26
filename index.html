@@ -408,6 +408,19 @@ body{
 }
 .kv-fill{flex:1;min-height:46vh}
 .kv-safe{height:2px}
+.support{position:relative;z-index:1;text-align:center;margin-top:10px}
+.support a{
+  display:inline-block;padding:7px 16px;border-radius:999px;
+  background:rgba(255,255,255,.92);color:#8A5A20;
+  border:2px solid rgba(233,137,32,.85);
+  font-size:12px;font-weight:800;text-decoration:none;line-height:1.2;
+  -webkit-tap-highlight-color:transparent;
+}
+.support a:active{transform:scale(.96)}
+.support .note{
+  display:block;margin-top:5px;font-size:10px;font-weight:700;
+  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)
+}
 #scTitle > .pbadge,
 #scTitle > .btn{position:relative;z-index:1}
 /* タイトルは キービジュアルを 見せたいので、ボタンは 小さめ・下寄せ */
@@ -536,6 +549,21 @@ body{
 </style>
 </head>
 <body>
+<noscript>
+<div style="position:fixed;inset:0;z-index:99999;background:#FFFBF0;color:#3A2A1E;
+  font-family:system-ui,-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;
+  display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:520px;line-height:1.9;">
+    <p style="font-size:22px;font-weight:800;margin:0 0 16px;">JavaScript が オフに なっています</p>
+    <p style="margin:0 0 14px;">このゲームは JavaScript を つかって うごきます。</p>
+    <p style="margin:0 0 14px;font-weight:700;">iPhone・iPad をおつかいの方へ</p>
+    <p style="margin:0 0 14px;">「ファイル」アプリの プレビューでは うごきません。<br>
+    下のURLを Safari で ひらいて、共有ボタン →「ホーム画面に追加」を おしてください。</p>
+    <p style="margin:0;font-weight:700;word-break:break-all;">
+      https://ganapati0330.github.io/sansu-battle/</p>
+  </div>
+</div>
+</noscript>
 <div id="app">
 
   <div class="updbar" id="updBar">
@@ -566,6 +594,10 @@ body{
     </button>
     <button class="btn primary" id="goSelect">はじめる</button>
     <button class="btn ghost" id="statsTitle" style="margin-top:8px">にがて分析を みる</button>
+    <div class="support">
+      <a href="https://futeneko-games.booth.pm/" target="_blank" rel="noopener">♥ このゲームを応援する</a>
+      <span class="note">保護者のかたへ ／ すべて無料で公開しています</span>
+    </div>
     <div class="kv-safe"></div>
   </section>
 
